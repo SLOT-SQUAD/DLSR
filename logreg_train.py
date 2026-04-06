@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 import sys
+import json
+
 X_max, X_min = None, None
 
 def sigmoid(z):
@@ -18,7 +20,7 @@ def predict_one_vs_all(X, thetas):
 
 def logistic_regression(X, Y, learningRate, maxIterations):
     n_samples, n_features = X.shape
-    print("n_samples :", n_samples, "n_features :", n_features, "\n")
+    # print("n_samples :", n_samples, "n_features :", n_features, "\n")
     theta = np.zeros(n_features)
     for i in range(maxIterations):
         z = np.dot(X, theta)
@@ -27,9 +29,6 @@ def logistic_regression(X, Y, learningRate, maxIterations):
         error = h - Y
         gradient = np.dot(X.T, error) / n_samples
         theta -= learningRate * gradient
-        # if i % 100 == 0:
-        #     loss = -np.mean(Y*np.log(h) + (1-Y)*np.log(1-h))
-        #     print(f"Iteration {i}, Loss: {loss:.4f}")
     return theta
 
 def train_one_vs_all(X, Y, classes, learningRate, maxIterations):
@@ -44,7 +43,7 @@ def train_logistic_regression_model(dataset_path):
     # prepare dataset
     X, Y = [], []
     dataFrame = pd.read_csv(dataset_path)
-    ignored_columns = ['Index', 'Hogwarts House', 'First Name', 'Last Name']
+    ignored_columns = ['Index', 'Hogwarts House', 'First Name', 'Last Name', 'Birthday', 'Best Hand']
     X = dataFrame.drop(ignored_columns, axis=1)
     X = X.select_dtypes(include='number')
     X = X.fillna(X.mean(numeric_only=True))
@@ -57,10 +56,21 @@ def train_logistic_regression_model(dataset_path):
     Y = Y.map({'Gryffindor': 0, 'Slytherin': 1, 'Ravenclaw': 2, 'Hufflepuff': 3})
     Y = Y.values
 
-    X = np.hstack((np.ones((X.shape[0], 1)), X))
     # print("X :", X, "\n")
     #training
+    X = np.hstack((np.ones((X.shape[0], 1)), X))
     thetaS = train_one_vs_all(X, Y, 4, 0.1, 10000)
+    thetaS_fixed = {
+        "Gryffindor": thetaS[0].tolist(),
+        "Slytherin": thetaS[1].tolist(),
+        "Ravenclaw": thetaS[2].tolist(),
+        "Hufflepuff": thetaS[3].tolist()
+    }
+    with open('weights.json', 'w') as f:
+        json.dump(thetaS_fixed, f)
+    with open('minmax.json', 'w') as f:
+        json.dump({"X_min": X_min.tolist(), "X_max": X_max.tolist()}, f)
+
     prediction = predict_one_vs_all(X, np.array(thetaS))
     np.save("weights.npy", np.array(thetaS))
     accuracy = np.mean(prediction == Y)
