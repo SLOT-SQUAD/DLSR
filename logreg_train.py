@@ -3,20 +3,8 @@ import numpy as np
 import sys
 import json
 
-X_max, X_min = None, None
-
 def sigmoid(z):
     return 1 / (1 + np.exp(-z))
-
-def predict_logistic(X, theta):
-    z = np.dot(X, theta)
-    h = sigmoid(z)
-    return (h >= 0.5).astype(int)
-
-def predict_one_vs_all(X, thetas):
-    z = np.dot(X, thetas.T)
-    h = sigmoid(z)
-    return np.argmax(h, axis=1)
 
 def logistic_regression(X, Y, learningRate, maxIterations):
     n_samples, n_features = X.shape
@@ -28,6 +16,7 @@ def logistic_regression(X, Y, learningRate, maxIterations):
         h = np.clip(h, 1e-10, 1-1e-10)
         error = h - Y
         gradient = np.dot(X.T, error) / n_samples
+        print("gradient : ", gradient)
         theta -= learningRate * gradient
     return theta
 
@@ -35,6 +24,7 @@ def train_one_vs_all(X, Y, classes, learningRate, maxIterations):
     thetas = []
     for clasS in range(classes):
         y_binary = (Y == clasS).astype(int)
+        print("y_binary : ", y_binary)
         theta_class = logistic_regression(X, y_binary, learningRate, maxIterations)
         thetas.append(theta_class)
     return thetas
@@ -56,9 +46,10 @@ def train_logistic_regression_model(dataset_path):
     Y = Y.map({'Gryffindor': 0, 'Slytherin': 1, 'Ravenclaw': 2, 'Hufflepuff': 3})
     Y = Y.values
 
-    # print("X :", X, "\n")
     #training
+    # print("before bias :", X)
     X = np.hstack((np.ones((X.shape[0], 1)), X))
+    # print("bias : ", X)
     thetaS = train_one_vs_all(X, Y, 4, 0.1, 10000)
     thetaS_fixed = {
         "Gryffindor": thetaS[0].tolist(),
@@ -70,24 +61,11 @@ def train_logistic_regression_model(dataset_path):
         json.dump(thetaS_fixed, f)
     with open('minmax.json', 'w') as f:
         json.dump({"X_min": X_min.tolist(), "X_max": X_max.tolist()}, f)
-
-    prediction = predict_one_vs_all(X, np.array(thetaS))
-    np.save("weights.npy", np.array(thetaS))
-    accuracy = np.mean(prediction == Y)
-    print(f"Training accuracy: {accuracy*100:.2f}%")
-
-
-
-
-
-
-    
-
-
+    print("Training finished ✅")
 
 if __name__ == "__main__":
     if(len(sys.argv) != 2):
-        print("Usage: python logreg_predict.py <dataset_test.csv>")
+        print("Usage: python logreg_train.py <dataset_train.csv>")
         sys.exit(1)
     else:
         train_logistic_regression_model(sys.argv[1])
