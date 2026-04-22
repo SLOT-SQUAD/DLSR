@@ -118,27 +118,83 @@ def analyze_homogeneity(rows, numeric_features):
     results.sort(key=lambda item: item["score"])
     return results
 
+def plot_homogeneity_bar_chart(results, title, selected_results):
+    feature_names = []
+    scores = []
+
+    for item in selected_results:
+        feature_names.append(item["feature"])
+        scores.append(item["score"])
+
+    plt.figure(figsize=(10, 6))
+    plt.bar(feature_names, scores)
+    plt.title(title)
+    plt.xlabel("Features")
+    plt.ylabel("Homogeneity score")
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.show()
+
+
 def main():
-    if len(sys.argv) != 2:
-        print("Usage: python3 histogram.py dataset_train.csv")
+    if len(sys.argv) < 3:
+        print("Usage:")
+        print("  python3 histogram.py dataset_train.csv summary")
+        print("  python3 histogram.py dataset_train.csv hist")
+        print("  python3 histogram.py dataset_train.csv feature <feature_name>")
         sys.exit(1)
 
     path = sys.argv[1]
+    mode = sys.argv[2]
+
     rows = load_dataset(path)
     numeric_features = get_numeric_features(rows)
+    results = analyze_homogeneity(rows, numeric_features)
 
-    for feature in numeric_features:
-        grouped_scores = group_scores_by_house(rows, feature)
-        plot_histogram(grouped_scores, feature)
-        results = analyze_homogeneity(rows, numeric_features)
+    if mode == "summary":
+        print("\nMatières les plus homogènes :")
+        for item in results[:5]:
+            print(f"- {item['feature']} -> score = {item['score']:.2f}")
 
-    print("\nMatières les plus homogènes :")
-    for item in results[:5]:
-        print(f"- {item['feature']} -> score = {item['score']:.2f}")
+        print("\nMatières les moins homogènes :")
+        for item in results[-5:]:
+            print(f"- {item['feature']} -> score = {item['score']:.2f}")
 
-    print("\nMatières les moins homogènes :")
-    for item in results[-5:]:
-        print(f"- {item['feature']} -> score = {item['score']:.2f}")
+        plot_homogeneity_bar_chart(
+            results,
+            "Top 5 des matières les plus homogènes",
+            results[:5]
+        )
+
+        plot_homogeneity_bar_chart(
+            results,
+            "Top 5 des matières les moins homogènes",
+            results[-5:]
+        )
+
+    elif mode == "hist":
+        for feature in numeric_features:
+            grouped_scores = group_scores_by_house(rows, feature)
+            plot_histogram(grouped_scores, feature)
+
+    elif mode == "feature":
+        if len(sys.argv) < 4:
+            print("Usage: python3 histogram.py dataset_train.csv feature <feature_name>")
+            sys.exit(1)
+
+        feature_name = sys.argv[3]
+
+        if feature_name not in numeric_features:
+            print(f"Feature invalide : {feature_name}")
+            sys.exit(1)
+
+        grouped_scores = group_scores_by_house(rows, feature_name)
+        plot_histogram(grouped_scores, feature_name)
+
+    else:
+        print("Mode invalide. Utilise 'summary', 'hist' ou 'feature'.")
+        sys.exit(1)
+
 
 if __name__ == "__main__":
     main()
