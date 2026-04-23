@@ -1,7 +1,8 @@
 import sys
 import csv
 import matplotlib.pyplot as plt
-
+import json
+import os
 
 def load_dataset(path):
     with open(path, "r", newline="", encoding="utf-8") as file:
@@ -240,6 +241,19 @@ def select_features_for_logreg(rows, numeric_features, top_n=4, correlation_thre
 
     return selected_features
 
+def save_selected_features_to_json(selected_features, filename="selected_features.json"):
+    if os.path.exists(filename):
+        print(f"Le fichier {filename} existe déjà. Création ignorée.")
+        return
+
+    data = {
+        "selected_features": selected_features
+    }
+
+    with open(filename, "w", encoding="utf-8") as file:
+        json.dump(data, file, indent=4)
+
+    print(f"Fichier JSON créé : {filename}")
 
 def main():
     if len(sys.argv) != 2:
@@ -260,6 +274,8 @@ def main():
     print("Features recommandées pour la logistic regression :")
     for feature in selected_features:
         print("-", feature)
+
+    save_selected_features_to_json(selected_features)
 
     plot_pair_matrix(rows, selected_features)
 

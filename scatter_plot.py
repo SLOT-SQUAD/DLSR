@@ -9,7 +9,6 @@ def load_dataset(path):
         rows = list(reader)
     return rows
 
-
 def is_float(value):
     if value is None or value == "":
         return False
@@ -18,7 +17,6 @@ def is_float(value):
         return True
     except ValueError:
         return False
-
 
 def get_numeric_features(rows):
     if not rows:
@@ -47,7 +45,6 @@ def get_numeric_features(rows):
 
     return numeric_features
 
-
 def get_feature_pairs(rows, feature_x, feature_y):
     x_values = []
     y_values = []
@@ -61,7 +58,6 @@ def get_feature_pairs(rows, feature_x, feature_y):
             y_values.append(float(y))
 
     return x_values, y_values
-
 
 def plot_scatter(x_values, y_values, feature_x, feature_y):
     plt.figure(figsize=(10, 6))
@@ -82,7 +78,6 @@ def calculate_mean(values):
         total += value
 
     return total / len(values)
-
 
 def calculate_correlation(x_values, y_values):
     if len(x_values) != len(y_values) or len(x_values) == 0:
