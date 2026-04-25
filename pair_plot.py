@@ -10,7 +10,6 @@ def load_dataset(path):
         rows = list(reader)
     return rows
 
-
 def is_float(value):
     if value is None or value == "":
         return False
@@ -19,7 +18,6 @@ def is_float(value):
         return True
     except ValueError:
         return False
-
 
 def calculate_mean(values):
     if not values:
@@ -83,7 +81,6 @@ def get_numeric_features(rows):
 
     return numeric_features
 
-
 def get_feature_pairs_by_house(rows, feature_x, feature_y):
     grouped_points = {
         "Gryffindor": {"x": [], "y": []},
@@ -103,7 +100,6 @@ def get_feature_pairs_by_house(rows, feature_x, feature_y):
 
     return grouped_points
 
-
 def get_single_feature_by_house(rows, feature_name):
     grouped_scores = {
         "Gryffindor": [],
@@ -120,7 +116,6 @@ def get_single_feature_by_house(rows, feature_name):
             grouped_scores[house].append(float(value))
 
     return grouped_scores
-
 
 def plot_pair_matrix(rows, selected_features):
     house_colors = {
@@ -169,6 +164,7 @@ def plot_pair_matrix(rows, selected_features):
 
     plt.tight_layout()
     plt.show()
+
 def get_feature_pairs(rows, feature_x, feature_y):
     x_values = []
     y_values = []
@@ -182,7 +178,6 @@ def get_feature_pairs(rows, feature_x, feature_y):
             y_values.append(float(y))
 
     return x_values, y_values
-
 
 def calculate_correlation(x_values, y_values):
     if len(x_values) != len(y_values) or len(x_values) == 0:

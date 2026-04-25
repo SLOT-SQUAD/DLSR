@@ -9,7 +9,6 @@ def load_dataset(path):
         rows = list(reader)
     return rows
 
-
 def is_float(value):
     if value is None or value == "":
         return False
@@ -18,7 +17,6 @@ def is_float(value):
         return True
     except ValueError:
         return False
-
 
 def get_numeric_features(rows):
     if not rows:
@@ -47,7 +45,6 @@ def get_numeric_features(rows):
 
     return numeric_features
 
-
 def group_scores_by_house(rows, feature_name):
     grouped_scores = {
         "Gryffindor": [],
@@ -65,7 +62,6 @@ def group_scores_by_house(rows, feature_name):
 
     return grouped_scores
 
-
 def plot_histogram(grouped_scores, feature_name):
     plt.figure(figsize=(10, 6))
 
@@ -80,7 +76,6 @@ def plot_histogram(grouped_scores, feature_name):
     plt.tight_layout()
     plt.show()
 
-
 def calculate_mean(values):
     if not values:
         return 0
@@ -88,7 +83,6 @@ def calculate_mean(values):
     for value in values:
         total += value
     return total / len(values)
-
 
 def calculate_homogeneity_score(grouped_scores):
     means = {}
@@ -134,7 +128,6 @@ def plot_homogeneity_bar_chart(results, title, selected_results):
     plt.xticks(rotation=45)
     plt.tight_layout()
     plt.show()
-
 
 def main():
     if len(sys.argv) < 3:
