@@ -17,9 +17,9 @@ def test_logistic_regression_model(dataset_path):
         minmax = json.load(f)
     X_min = np.array(minmax["X_min"])
     X_max = np.array(minmax["X_max"])
-
-    ignored_columns = ['Index', 'Hogwarts House', 'First Name', 'Last Name', 'Birthday', 'Best Hand']
-    numeric_columns = [col for col in dataFrame.columns if col not in ignored_columns]
+    with open("selected_features.json", "r") as f:
+        selected_features = json.load(f)["selected_features"]
+    numeric_columns = [col for col in dataFrame.columns if col in selected_features]
 
     X = dataFrame[numeric_columns].fillna(0).values.astype(float)
 
