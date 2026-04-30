@@ -12,7 +12,6 @@ def test_logistic_regression_model(dataset_path):
     with open('weights.json', 'r') as f:
         models = json.load(f)
 
-    #min-max for normalization
     with open('minmax.json', 'r') as f:
         minmax = json.load(f)
     X_min = np.array(minmax["X_min"])

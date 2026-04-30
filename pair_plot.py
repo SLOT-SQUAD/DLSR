@@ -1,8 +1,8 @@
 import sys
 import csv
-import matplotlib.pyplot as plt
 import json
 import os
+import matplotlib.pyplot as plt
 
 def load_dataset(path):
     with open(path, "r", newline="", encoding="utf-8") as file:
